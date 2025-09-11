@@ -2,13 +2,15 @@ const Queue = require('../models/Queue')
 
 const createQueue = async(req, res) =>{
     try{
-        const {vendor, service} = req.body;
-
-        const queue = await Queue.create({
-            vendor,
-            service,
-            customers : [],
+        const {queueName, description, maxCapacity} = req.body;
+         const vendorId = req.user.id; // middleware se mila
+        const queue  = await Queue.create({
+            queueName,
+            description,
+            vendor: vendorId,
+            maxCapacity,
         })
+        await queue.save();
         res.status(201).json({message: "Queue created successfully",queue,});
     } catch(err){
         return res.status(500).json({message : err.message})

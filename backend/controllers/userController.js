@@ -40,7 +40,7 @@ const registerUser = async(req, res) => {
 const loginUser = async(req, res) =>{
     try{
         const {email, password} = req.body;
-
+        
         const user = await User.findOne({email});
         if(!user){
             return res.status(400).json({message : "User not found"})
@@ -50,10 +50,13 @@ const loginUser = async(req, res) =>{
         if(!isMatch) return res.status(400).json({message : "Invalid credentials"})
 
         const token = jwt.sign({id : user._id, email : user.email}, process.env.JWT_SECRET);
-        res.json({
-      message: "Login successful",
-      token,
-    });
+         res.cookie("token", token, {
+        httpOnly: true,  // JS se access nahi hoga
+        secure: true,    // sirf HTTPS pe
+        sameSite: "strict" // CSRF protection
+            });
+
+        res.status(200).json({message: "Login successful", token, role: user.role,});
 
     } catch(error){
         res.status(500).json({message : error.message})
@@ -104,8 +107,17 @@ const deleteUser = async(req, res) =>{
     }
 } 
 
+const logoutUser = async(req, res) =>{
+    res.clearCookie('token', {
+        httpOnly : true,
+        secure : false,
+        sameSite : 'strict'
+    })
+
+    res.status(200).json({ message: "Logged out successfully ✅" });
+}
 
 
 
 
-module.exports = {registerUser, loginUser, updateUser, deleteUser}
+module.exports = {registerUser, loginUser, updateUser, deleteUser, logoutUser}

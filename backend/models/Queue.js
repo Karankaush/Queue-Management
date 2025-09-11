@@ -1,35 +1,42 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose')
 
 const queueSchema = new mongoose.Schema(
   {
-    vendor: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // vendor user
-      required: true,
-    },
-    customers: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User", // customer user
-        },
-        joinedAt: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
-    service: {
+    queueName: {
       type: String,
       required: true,
     },
-    isActive: {
-      type: Boolean,
-      default: true,
+    description: {
+      type: String,
     },
+    vendor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    maxCapacity: {
+      type: Number,
+      required: true,
+      default: 50, // default limit
+    },
+    currentQueue: {
+      type: Number,
+      default: 0,
+    },
+    status: {
+      type: String,
+      enum: ["open", "closed"],
+      default: "open",
+    },
+    customers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );
 
-const Queue = mongoose.model("Queue", queueSchema);
-module.exports =  Queue;
+const Queue =  mongoose.model("Queue", queueSchema);
+module.exports = Queue;

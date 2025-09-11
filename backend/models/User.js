@@ -19,11 +19,8 @@ const userSchema = new mongoose.Schema({
         enum : ['customer', 'vendor'],
         default : "customer",
     },
-    name :{
-        type: String,
-        required : true,
-    },
-}, {timestamps : true}
+}, 
+{timestamps : true}
 )
 
 const User = mongoose.model("User", userSchema);
