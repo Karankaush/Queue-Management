@@ -5,9 +5,13 @@ const dotenv = require("dotenv")
 const userRoutes = require('./routes/userRoutes')
 const queueRoutes = require('./routes/queueRoutes')
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
+
 dotenv.config();
 
+app.use(cookieParser());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 connectDB()
 
 
@@ -19,7 +23,12 @@ app.use(
   })
 );
 
+
 app.get('/', (req, res) => {
+  const token = req.cookies.token;
+  if (!token) {
+    return res.status(401).json({ message: "No token found" });
+  }
     return res.send("API is running")
 })
 
